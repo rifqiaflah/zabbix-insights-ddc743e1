@@ -1,1 +1,7 @@
 project_id = "mpndqkjdooituswvqfdr"
+
+[functions.zabbix-api]
+verify_jwt = false
+
+[functions.elasticsearch-api]
+verify_jwt = false

@@ -40,3 +40,10 @@ export interface SecurityStats {
   authFailure: number;
   total: number;
 }
+
+export interface HourlySecurityData {
+  hour: string;
+  bruteforce: number;
+  ddos: number;
+  authFailure: number;
+}
