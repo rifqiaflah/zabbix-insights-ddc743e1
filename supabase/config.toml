@@ -1,0 +1,4 @@
+project_id = "mpndqkjdooituswvqfdr"
+
+[functions.zabbix-data]
+verify_jwt = false
