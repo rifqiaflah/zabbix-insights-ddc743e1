@@ -48,6 +48,8 @@ async function zabbixRequest(url: string, method: string, params: Record<string,
     body.auth = authToken;
   }
 
+  console.log(`Making Zabbix request to: ${url}, method: ${method}`);
+  
   const response = await fetch(url, {
     method: 'POST',
     headers: {
@@ -56,7 +58,25 @@ async function zabbixRequest(url: string, method: string, params: Record<string,
     body: JSON.stringify(body),
   });
 
-  return response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const responseText = await response.text();
+  
+  console.log(`Response status: ${response.status}, content-type: ${contentType}`);
+  
+  // Check if response is HTML (error page)
+  if (responseText.trim().startsWith('<') || contentType.includes('text/html')) {
+    console.error(`Received HTML response instead of JSON. URL might be incorrect.`);
+    console.error(`Response preview: ${responseText.substring(0, 200)}`);
+    throw new Error(`Zabbix API returned HTML instead of JSON. Please verify ZABBIX_API_URL is correct (should end with /api_jsonrpc.php). Current URL: ${url}`);
+  }
+  
+  // Try to parse JSON
+  try {
+    return JSON.parse(responseText);
+  } catch (e) {
+    console.error(`Failed to parse JSON response: ${responseText.substring(0, 500)}`);
+    throw new Error(`Invalid JSON response from Zabbix API: ${responseText.substring(0, 100)}`);
+  }
 }
 
 async function authenticate(url: string, username: string, password: string): Promise<string> {
